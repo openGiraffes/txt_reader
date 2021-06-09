@@ -1,0 +1,34 @@
+{
+  "name": "txt reader",
+  "subtitle": "txt reader",
+  "description": "txt reader for KaiOS",
+  "version": "1.0",
+  "launch_path": "/index.html",
+  "type": "privileged",
+  "origin": "app://kai.michael.reader",
+  "icons": {
+    "120": "/img/icon120x120.png"
+  },
+  "developer": {
+    "name": "michael_eddy",
+    "url": ""
+  },
+  "permissions": {
+    "attention": {},
+    "mobilenetwork": { "description": "Required data from http" },
+    "systemXHR": {
+      "description": "Required for autocompletion when searching"
+    }
+  },
+  "fullscreen": false,
+  "ime_default_softkey_bar": true,
+  "theme_color": "#00a1d6",
+  "default_locale": "zh-CN",
+  "locales": {
+    "zh-CN": {
+      "name": "小说阅读器",
+      "subtitle": "小说阅读器",
+      "description": "小说阅读器KaiOS版"
+    }
+  }
+}
