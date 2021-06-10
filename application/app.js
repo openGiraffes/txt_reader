@@ -2,34 +2,35 @@ $.extend({
     getFileType: function (file, callBack) {
         var reader = new FileReader();
         reader.onload = function (e) {
-            var encoding = null, bomLen = 0;
-            var bytes = e.target.result;
+            var encoding = '';
+            var array = e.target.result;
+            var bytes = new Uint8Array(array, 0, 4);
             var b1 = bytes[0], b2 = bytes[1], b3 = bytes[2], b4 = bytes[3];
-            if (b1 == 0xEF && b2 == 0xBB && b3 == 0xBF) {
+            if (b1 == 239 && b2 == 187) {
                 encoding = 'utf8';
             }
             //https://en.wikipedia.org/wiki/GBK_(character_encoding)
-            else if ((b1 >= 0x81 && b1 <= 0xFE && b2 >= 0x40 && b2 <= 0xFE) ||
-                (b2 >= 0x40 && b2 <= 0xFE && b1 >= 0x81 && b1 <= 0xA0) ||
-                (b2 >= 0x40 && b2 < 0xA0 && b2 != 0x7F && ((b1 >= 0xAA && b1 <= 0xFE) || (b1 >= 0xA1 && b1 <= 0xF9)))
-                || (b2 >= 0xA1 && b2 <= 0xFE && ((b1 >= 0xA1 && b1 <= 0xA9) || (b1 >= 0xB0 && b1 <= 0xF7)
-                    || (b1 >= 0xAA && b1 <= 0xAF) || (b1 >= 0xF8 && b1 <= 0xFE)))) {
+            else if ((b1 >= 129 && b1 <= 254 && b2 >= 64 && b2 <= 254) ||
+                (b2 >= 64 && b2 <= 254 && b1 >= 129 && b1 <= 160) ||
+                (b2 >= 64 && b2 < 160 && b2 != 127 && ((b1 >= 170 && b1 <= 254) || (b1 >= 161 && b1 <= 249)))
+                || (b2 >= 161 && b2 <= 254 && ((b1 >= 161 && b1 <= 169) || (b1 >= 176 && b1 <= 247)
+                    || (b1 >= 170 && b1 <= 175) || (b1 >= 248 && b1 <= 254)))) {
                 encoding = "gbk";
             }
-            else if (b1 == 0xFE && b2 == 0xFF) {
+            else if (b1 == 254 && b2 == 255) {
                 encoding = 'utf-16be';
             }
-            else if (b1 == 0xFF && b2 == 0xFE) {
+            else if (b1 == 255 && b2 == 254) {
                 encoding = 'utf-16le';
             }
             //https://en.wikipedia.org/wiki/GB_18030
-            else if ((b1 >= 0x00 && b1 <= 0x7F) || b1 == 0x80 || b1 == 0xFF ||
-                (b1 >= 0x00 && b1 <= 0x7F && b2 >= 0x40 && b2 <= 0xFE && b2 != 0x7F) ||
-                (b1 >= 0x81 && b1 <= 0x8F && b2 >= 0x30 && b2 <= 0x39 && b3 >= 0x81 && b3 <= 0xFE && b4 >= 0x30 && b4 <= 0x39) ||
-                (b1 >= 0x90 && b1 <= 0xFE && b2 >= 0x30 && b2 <= 0x39 && b3 >= 0x81 && b3 <= 0xFE && b4 >= 0x30 && b4 <= 0x39)) {
-                return 'gb18030';
+            else if ((b1 >= 0 && b1 <= 127) || b1 == 128 || b1 == 255 ||
+                (b1 >= 0 && b1 <= 127 && b2 >= 64 && b2 <= 254 && b2 != 127) ||
+                (b1 >= 129 && b1 <= 143 && b2 >= 48 && b2 <= 57 && b3 >= 129 && b3 <= 254 && b4 >= 48 && b4 <= 57) ||
+                (b1 >= 144 && b1 <= 254 && b2 >= 48 && b2 <= 57 && b3 >= 129 && b3 <= 254 && b4 >= 48 && b4 <= 57)) {
+                encoding = 'gb18030';
             }
-            callBack(encoding, bomLen);
+            callBack(encoding);
         };
         reader.readAsArrayBuffer(file);
     },
@@ -41,31 +42,15 @@ $.extend({
         };
         reader.readAsText(file, encoding);
     },
-    getPath: function (callBack, path) {
-        var root = null;
-        if (typeof path == 'undefined' || path == '')
-            root = navigator.getDeviceStorage('sdcard');
-        else
-            root = navigator.getDeviceStorage(path);
+    getPath: function (callBack) {
+        var root = navigator.getDeviceStorage('sdcard');
         var cursor = root.enumerate();
         cursor.onsuccess = function () {
             if (this.result) {
-                var file = this.result;
-                console.log("File: " + file);
+                if (this.result.name.endsWith('.txt'))
+                    callBack(this.result);
                 this.continue();
             }
         }
-    },
-    getFile: function (path, callBack) {
-        var root = navigator.getDeviceStorage('sdcard');
-        var request = root.get(path);
-        request.onsuccess = function () {
-            var file = this.result;
-            console.log("Get the file: " + file.name);
-        }
-        request.onerror = function () {
-            console.warn("Unable to get the file: " + this.error);
-        }
-
     }
 });

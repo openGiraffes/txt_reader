@@ -1,7 +1,12 @@
+let files = [];
+
 $(function () {
     document.activeElement.addEventListener('keydown', handleKeydown);
-    var result = $.getPath();
-    console.log(result);
+    $.getPath(function (file) {
+        files.push(file);
+        var item = '<div class="item">' + file.name + '</div>';
+        $('.items').append(item);
+    });
 });
 
 function handleKeydown(e) {
@@ -16,11 +21,16 @@ function handleKeydown(e) {
             break;
         case 'Q':
         case 'SoftLeft':
-
-            break;
-        case 'E':
-        case 'SoftRight':
-
+            if (current > -1) {
+                var file = files[current];
+                $.getFileType(file, function (encoding) {
+                    if (encoding != '') {
+                        console.log(encoding)
+                    }
+                    else
+                        alert('不支持的文件编码！');
+                });
+            }
             break;
         case 'Backspace':
             if (confirm("是否退出？"))
@@ -29,7 +39,7 @@ function handleKeydown(e) {
     }
 }
 
-var current = 0;
+var current = -1;
 function nav(move) {
     var next = current + move;
     const items = document.querySelectorAll('.item');
@@ -40,8 +50,10 @@ function nav(move) {
         next = 0;
     }
     const targetElement = items[next];
+    $(items).removeClass('select');
     if (targetElement) {
         current = next;
+        $(targetElement).addClass('select');
         targetElement.focus();
     }
 }
