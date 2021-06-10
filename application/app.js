@@ -30,7 +30,42 @@ $.extend({
                 return 'gb18030';
             }
             callBack(encoding, bomLen);
-        }
+        };
         reader.readAsArrayBuffer(file);
+    },
+    readyFile: function (file, encoding, callBack) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            var result = e.target.result;
+            callBack(result);
+        };
+        reader.readAsText(file, encoding);
+    },
+    getPath: function (callBack, path) {
+        var root = null;
+        if (typeof path == 'undefined' || path == '')
+            root = navigator.getDeviceStorage('sdcard');
+        else
+            root = navigator.getDeviceStorage(path);
+        var cursor = root.enumerate();
+        cursor.onsuccess = function () {
+            if (this.result) {
+                var file = this.result;
+                console.log("File: " + file);
+                this.continue();
+            }
+        }
+    },
+    getFile: function (path, callBack) {
+        var root = navigator.getDeviceStorage('sdcard');
+        var request = root.get(path);
+        request.onsuccess = function () {
+            var file = this.result;
+            console.log("Get the file: " + file.name);
+        }
+        request.onerror = function () {
+            console.warn("Unable to get the file: " + this.error);
+        }
+
     }
 });

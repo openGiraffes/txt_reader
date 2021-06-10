@@ -15,6 +15,7 @@
   },
   "permissions": {
     "attention": {},
+    "device-storage:sdcard": { "access": "readwrite" },
     "mobilenetwork": { "description": "Required data from http" },
     "systemXHR": {
       "description": "Required for autocompletion when searching"

@@ -1,0 +1,22 @@
+.items {
+  width: 100%;
+  height: calc(100% - 30px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: fixed;
+  z-index: 1;
+}
+
+.item {
+  position: relative;
+  width: 100%;
+  height: 60px;
+  background-color: white;
+  outline: none;
+}
+
+.item:focus,
+.item.select {
+  background-color: #6f02b5;
+  color: white;
+}

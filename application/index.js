@@ -1,9 +1,12 @@
 $(function () {
     document.activeElement.addEventListener('keydown', handleKeydown);
-
+    var result = $.getPath();
+    console.log(result);
 });
 
 function handleKeydown(e) {
+    if (e.key != "EndCall")
+        e.preventDefault();
     switch (e.key) {
         case 'ArrowUp':
             nav(-1);
@@ -22,9 +25,6 @@ function handleKeydown(e) {
         case 'Backspace':
             if (confirm("是否退出？"))
                 window.close();
-            break;
-        case 'Enter':
-            
             break;
     }
 }
